@@ -16,11 +16,12 @@
               Подключить
             </v-btn>
             <span v-else-if="!isMetamaskSupported">Кошелек MetaMask недоступен или не подключен</span>
+            <span v-else-if="contract == undefined || contract == null">Проверьте правильность выбора сети. Должна быть Ropsten.</span>
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
-    <v-row v-if="currentAccount">
+    <v-row v-if="currentAccount && contract">
       <v-col cols="12" md="12" class="d-flex justify-center align-center">
         <v-card style="max-width:600px; min-width:600px;">
           <v-card-title>Действия с контрактом</v-card-title>
@@ -163,11 +164,13 @@ export default {
 
         const web3 = new Web3(this.provider, null, { transactionConfirmationBlocks: 1 })
         const networkId = await web3.eth.net.getId()
-        this.contractAddress = networks[networkId].address
-        this.contract = new web3.eth.Contract(
-          abi,
-          networks[networkId].address
-        )
+        if (networks[networkId] !== undefined && networks[networkId].address !== undefined) {
+          this.contractAddress = networks[networkId].address
+          this.contract = new web3.eth.Contract(
+            abi,
+            networks[networkId].address
+          )
+        }
       }
     }
   },
